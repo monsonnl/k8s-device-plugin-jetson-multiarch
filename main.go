@@ -108,7 +108,7 @@ func validateFlags(c *cli.Context) error {
 }
 
 func start(c *cli.Context) error {
-	if _, err := os.Stat("/sys/module/tegra_fuse/parameters/tegra_chip_id"); !os.IsNotExist(err) {
+	if IsTegra() {
 		log.Printf("NVIDIA Tegra device detected!")
 	} else {
 		log.Println("Loading NVML")

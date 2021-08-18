@@ -32,6 +32,11 @@ const (
 	allHealthChecks        = "xids"
 )
 
+func IsTegra() (result bool, err error) {
+	_, err := os.Stat("/sys/module/tegra_fuse/parameters/tegra_chip_id"); 
+	return !os.IsNotExist(err), err
+}
+
 // Device couples an underlying pluginapi.Device type with its device node paths
 type Device struct {
 	pluginapi.Device
@@ -82,7 +87,7 @@ func (g *GpuDeviceManager) Devices() []*Device {
 	var devs []*Device
 
 	// If it is a Tegra board only one GPU is available
-	if _, err := os.Stat("/sys/module/tegra_fuse/parameters/tegra_chip_id"); !os.IsNotExist(err) {
+	if IsTegra() {
 		// On Jetson there is no way of getting an UUID, however default is 0
 		// More info : https://forums.developer.nvidia.com/t/chip-uid/48217#5100481
 		 var device = &nvml.Device{
@@ -185,7 +190,7 @@ func checkHealth(stop <-chan interface{}, devices []*Device, unhealthy chan<- *D
 		return
 	}
 	// No health checks for Jetson
-	if _, err := os.Stat("/sys/module/tegra_fuse/parameters/tegra_chip_id"); !os.IsNotExist(err) {
+	if IsTegra() {
 		return
 	}
 
