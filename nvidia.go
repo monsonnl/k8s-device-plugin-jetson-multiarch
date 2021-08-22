@@ -32,9 +32,9 @@ const (
 	allHealthChecks        = "xids"
 )
 
-func IsTegra() (result bool, err error) {
+func IsTegra() bool {
 	_, err := os.Stat("/sys/module/tegra_fuse/parameters/tegra_chip_id"); 
-	return !os.IsNotExist(err), err
+	return !os.IsNotExist(err)
 }
 
 // Device couples an underlying pluginapi.Device type with its device node paths
@@ -93,7 +93,7 @@ func (g *GpuDeviceManager) Devices() []*Device {
 		 var device = &nvml.Device{
 			UUID: "0",
 		}
-		devs = append(devs, buildDevice(device))
+		devs = append(devs, buildDevice(device, []string{device.Path}, fmt.Sprintf("%v", 0)))
 		return devs
 	}
 
